@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  app:
+    image: my-docker-image:latest  # Replace with your Docker image
+    ports:
+      - "80:80"  # Map container port to host
+    environment:
+      - NODE_ENV=production
+      - AWS_REGION=ap-southeast-1
+    logging:
+      driver: awslogs
+      options:
+        awslogs-group: my-ecs-log-group
+        awslogs-region: ap-southeast-1
+        awslogs-stream-prefix: ecs
