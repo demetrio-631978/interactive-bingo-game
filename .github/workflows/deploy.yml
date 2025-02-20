@@ -15,7 +15,8 @@ jobs:
 
       - name: Install ECS CLI
         run: |
-          sudo curl -Lo /usr/local/bin/ecs-cli https://amazon-ecs-cli.s3.amazonaws.com/ecs-cli-linux-amd64-latest
+          sudo curl -Lo /usr/local/bin/ecs-cli \
+          https://amazon-ecs-cli.s3.amazonaws.com/ecs-cli-linux-amd64-latest
           sudo chmod +x /usr/local/bin/ecs-cli
           ecs-cli --version
 
@@ -28,29 +29,21 @@ jobs:
 
       - name: Check ECS Cluster
         run: |
-          aws ecs describe-clusters --clusters bingo-ecs-cluster-c702d43 --region ap-southeast-1 || \
-          aws ecs create-cluster --cluster-name bingo-ecs-cluster-c702d43 --region ap-southeast-1
+          aws ecs describe-clusters --clusters bingo-ecs-cluster-c702d43 \
+          --region ap-southeast-1 || \
+          aws ecs create-cluster --cluster-name bingo-ecs-cluster-c702d43 \
+          --region ap-southeast-1
 
-      - name: Ensure IAM Role is Attached to EC2 Instances
-        run: |
-          INSTANCE_IDS=$(aws ec2 describe-instances --filters "Name=tag:aws:autoscaling:groupName,Values=bingo-ecs-asg" --query "Reservations[*].Instances[*].InstanceId" --output text)
-
-          if [ -n "$INSTANCE_IDS" ]; then
-            for INSTANCE_ID in $INSTANCE_IDS; do
-              aws iam attach-role-policy --role-name ecsInstanceRole \
-                --policy-arn arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
-            done
-          else
-            echo "No ECS instances found in the ASG."
-          fi
-
-      - name: Configure ECS Cluster
+      - name: Configure ECS CLI
         run: |
           ecs-cli configure --cluster bingo-ecs-cluster-c702d43 \
-            --default-launch-type EC2 \
-            --config-name bingo-config \
-            --region ap-southeast-1
+          --default-launch-type FARGATE \
+          --config-name bingo-config \
+          --region ap-southeast-1
 
       - name: Deploy to ECS
         run: |
-          ecs-cli compose --file docker-compose.yml --cluster bingo-ecs-cluster-c702d43 --region ap-southeast-1 up
+          ecs-cli compose --file docker-compose.yml \
+          --project-name bingo-app \
+          --cluster bingo-ecs-cluster-c702d43 \
+          --region ap-southeast-1 up
