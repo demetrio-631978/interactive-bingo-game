@@ -1,5 +1,4 @@
----
-version: "3.8"
+version: "2"
 
 services:
   frontend:
@@ -8,28 +7,25 @@ services:
       - "3000:3000"
     environment:
       - REACT_APP_API_URL=http://backend:5000
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: "512M"
-    networks:
-      - app-network
 
   backend:
     image: my-backend-image:latest
     ports:
       - "5000:5000"
     environment:
-      - DATABASE_URL=mysql://user:password@my-rds-instance:3306/bingo-db
-    deploy:
-      resources:
-        limits:
-          cpus: "1"
-          memory: "1024M"
-    networks:
-      - app-network
+      - DATABASE_URL=mysql://user:password@database:3306/bingo-db
 
-networks:
-  app-network:
-    driver: bridge
+  database:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: bingo-db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+
+volumes:
+  db-data:
