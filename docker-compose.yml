@@ -2,24 +2,24 @@ version: "2"
 
 services:
   frontend:
-    image: my-frontend-image:latest
+    image: 124355652898.dkr.ecr.ap-southeast-1.amazonaws.com/frontend-repo:latest
     ports:
       - "3000:3000"
     environment:
       - REACT_APP_API_URL=http://backend:5000
 
   backend:
-    image: my-backend-image:latest
+    image: 124355652898.dkr.ecr.ap-southeast-1.amazonaws.com/backendend-repo:latest
     ports:
       - "5000:5000"
     environment:
-      - DATABASE_URL=mysql://user:password@database:3306/mydb
+      - DATABASE_URL=mysql://user:password@database:3306/bingo-db
 
   database:
     image: mysql:8
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: mydb
+      MYSQL_DATABASE: bingo-db
       MYSQL_USER: user
       MYSQL_PASSWORD: password
     ports:
