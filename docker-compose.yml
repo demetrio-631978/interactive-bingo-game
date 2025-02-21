@@ -1,4 +1,4 @@
-version: "2"
+version: '3.8'
 
 services:
   frontend:
@@ -7,15 +7,17 @@ services:
       - "3000:3000"
     environment:
       - REACT_APP_API_URL=http://backend:5000
-    network_mode: awsvpc
+    depends_on:
+      - backend
 
   backend:
     image: 124355652898.dkr.ecr.ap-southeast-1.amazonaws.com/backend-repo:latest
     ports:
       - "5000:5000"
     environment:
-      - DATABASE_URL=${DATABASE_URL}  # Fetch from ECS secrets or AWS SSM
-    network_mode: awsvpc
+      - DATABASE_URL=${DATABASE_URL} # Ensure this is set in AWS SSM or ECS secrets
+    depends_on:
+      - database
 
   database:
     image: mysql:8
@@ -26,4 +28,7 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "3306:3306"
-    network_mode: awsvpc
+
+networks:
+  default:
+    driver: bridge
