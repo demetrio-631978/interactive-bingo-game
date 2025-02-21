@@ -1,0 +1,17 @@
+version: 1
+task_definition:
+  ecs_network_mode: awsvpc
+  task_execution_role: arn:aws:iam::124355652898:role/ECSFargateExecutionRole
+  task_size:
+    cpu_limit: 1024
+    mem_limit: 2048
+
+run_params:
+  network_configuration:
+    awsvpc_configuration:
+      subnets:
+        - "subnet-0635ca595c8f0ced9"
+        - "subnet-0057ac861c5e9b683"
+      security_groups:
+        - "sg-0832184e716cf9608"
+      assign_public_ip: ENABLED
