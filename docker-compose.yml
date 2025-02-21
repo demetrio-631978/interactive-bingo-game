@@ -7,20 +7,23 @@ services:
       - "3000:3000"
     environment:
       - REACT_APP_API_URL=http://backend:5000
+    network_mode: awsvpc
 
   backend:
-    image: 124355652898.dkr.ecr.ap-southeast-1.amazonaws.com/backendend-repo:latest
+    image: 124355652898.dkr.ecr.ap-southeast-1.amazonaws.com/backend-repo:latest
     ports:
       - "5000:5000"
     environment:
-      - DATABASE_URL=mysql://user:password@database:3306/bingo-db
+      - DATABASE_URL=${DATABASE_URL}  # Fetch from ECS secrets or AWS SSM
+    network_mode: awsvpc
 
   database:
     image: mysql:8
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: bingo-db
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "3306:3306"
+    network_mode: awsvpc
